@@ -1,32 +1,44 @@
 import tensorflow as tf
-from tensorflow.keras import layers, models
-import os
-from tensorflow.keras.losses import Loss
-from PIL import Image
-import numpy as np
-import matplotlib.pyplot as plt
-cmap = plt.cm.gray_r
-from tensorflow.keras import backend as K
-from siamese_network import SiameseNetwork
+from tensorflow.keras import layers, models, backend as K
 
-# Freeze the Siamese network weights (since it's pretrained)
-siamese_model.trainable = False
 
-# Define Custom Loss Function
-def combined_loss(y_true, y_pred, alpha, beta):
-    # Reconstruction loss
+def combined_loss(y_true, y_pred, alpha, beta, siamese_model):
+    """
+    Computes the combined loss using UNet loss and Siamese network similarity loss.
+
+    Args:
+        y_true (tf.Tensor): Ground truth tensor.
+        y_pred (tf.Tensor): Predicted tensor.
+        alpha (float): Weight for the reconstruction loss (UNet loss).
+        beta (float): Weight for the similarity loss (Siamese network loss).
+        siamese_model (tf.keras.Model): The Siamese network model to compute similarity.
+
+    Returns:
+        tf.Tensor: Total combined loss value.
+    """
+    # Reconstruction loss (UNet loss)
     unet_loss = tf.keras.losses.mean_squared_error(y_true, y_pred)
-    
+
     # Similarity score from Siamese Network
-    S = siamese_model([y_true, y_pred]) 
-    
-    siamese_loss = (1-tf.reduce_mean(S))
-    
+    similarity_score = siamese_model([y_true, y_pred])
+    siamese_loss = 1 - tf.reduce_mean(similarity_score)
+
+    # Total combined loss
     total_loss = alpha * unet_loss + beta * siamese_loss
     return total_loss
 
 
 def pearson_correlation_metric(y_true, y_pred):
+    """
+    Computes the Pearson correlation coefficient between the true and predicted values.
+
+    Args:
+        y_true (tf.Tensor): Ground truth tensor.
+        y_pred (tf.Tensor): Predicted tensor.
+
+    Returns:
+        tf.Tensor: Pearson correlation coefficient.
+    """
     # Flatten the tensors
     y_true_flat = K.flatten(y_true)
     y_pred_flat = K.flatten(y_pred)
@@ -45,44 +57,61 @@ def pearson_correlation_metric(y_true, y_pred):
 
     return pearson_corr
 
-#For Eager execution, necessary for the pearson metric    
+
+# Enable Eager execution (needed for Pearson correlation metric)
 tf.compat.v1.enable_eager_execution()
 
-#UNET architecture
-def Unet(input_shape):
+
+def unet(input_shape):
+    """
+    Constructs a UNet generator model for image-to-image translation.
+
+    Args:
+        input_shape (tuple): Shape of the input images (height, width, channels).
+
+    Returns:
+        tf.keras.Model: UNet model.
+    """
+    # Define two input layers for the pair of images
     input_layer1 = layers.Input(shape=input_shape, name='input1')
     input_layer2 = layers.Input(shape=input_shape, name='input2')
 
-    #Encoder part
+    # Encoder part
     x = layers.Concatenate()([input_layer1, input_layer2])
     x = layers.Conv2D(64, (3, 3), activation='relu', padding='same')(x)
     x = layers.MaxPooling2D((2, 2))(x)
     x = layers.Conv2D(128, (3, 3), activation='relu', padding='same')(x)
     x = layers.MaxPooling2D((2, 2))(x)
-    # Add more encoder layers as needed
+    # Additional encoder layers can be added here if needed.
 
-    #Decoder part
+    # Decoder part
     x = layers.Conv2DTranspose(128, (3, 3), activation='relu', padding='same')(x)
     x = layers.UpSampling2D((2, 2))(x)
     x = layers.Conv2DTranspose(64, (3, 3), activation='relu', padding='same')(x)
     x = layers.UpSampling2D((2, 2))(x)
-    # Add more decoder layers as needed
+    # Additional decoder layers can be added here if needed.
 
-    #Output layer
+    # Output layer
     output_layer = layers.Conv2D(1, (3, 3), activation='sigmoid', padding='same', name='generated_image')(x)
 
-    # Model
+    # Define the model
     generator_model = models.Model(inputs=[input_layer1, input_layer2], outputs=output_layer, name='generator')
     return generator_model
 
-#Adjust based on your image size and channels    
-input_shape = (128, 128, 1)  
-generator = Unet(input_shape)
+
+# Define the input shape for images
+input_shape = (128, 128, 1)
+
+# Build the UNet generator
+generator = unet(input_shape)
+
+# Print the model summary
 generator.summary()
+
 
 #Fit function (training)
 #Adjust 'input1', 'input2', and 'generated_image' as your data
-generator.compile(optimizer='adam', loss='mean_squared_error', metrics=[pearson_correlation_metric])
+generator.compile(optimizer='adam', loss=combined_loss, metrics=[pearson_correlation_metric])
 history = generator.fit(
     {'input_image1': train_img1, 'input_image2': train_img2},
     {'generated_image': train_output},
@@ -90,14 +119,6 @@ history = generator.fit(
     epochs=500)
 
 
-# Plot training & validation pearson correlation values
-plt.plot(history.history['pearson_correlation_metric'])
-plt.plot(history.history['val_pearson_correlation_metric'])
-plt.title('Model Pearson correlatn')
-plt.ylabel('Correlation')
-plt.xlabel('Epoch')
-plt.legend(['Train', 'Validation'], loc='upper left')
-plt.show()
 
 #Test and adjust with your test data
 test_loss, test_metric = generator.evaluate([test_img1, test_img2] ,test_output)
