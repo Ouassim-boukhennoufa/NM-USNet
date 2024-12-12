@@ -1,6 +1,6 @@
 # NM-USNet: A Novel Generative Model for Parathyroid Glands Detection in Nuclear Medicine
 [NM-USNet Architecture](Images/Methodologie.pdf)
-This repository implements a generative model **NM-USNet** that is a combination of a **Siamese Network** and a **U-Net** model for parathyroid glands detection through automatic image subtraction using 123-I and 99m-Tc images. The combination of the two components is monitored with an optimized loss function that includes reconstruction error (MSE of the U-NET) and similarity computed by the SN, with dynamic weighting adjustment methodology.
+This repository contains different codes of a generative model **NM-USNet** that is a combination of a **Siamese Network** and a **U-Net** model for parathyroid glands detection through automatic image subtraction using 123-I and 99m-Tc images. The combination of the two components is monitored with an optimized loss function that includes reconstruction error (MSE of the U-NET) and similarity computed by the SN, with dynamic weighting adjustment methodology.
 
 ---
 
@@ -21,6 +21,7 @@ pip install -r requirements.txt
 ```
 ---
 ## Example execution of NM-USNet
-### Due to data privacy, this example image is generated using...
+### Due to data privacy, this example image is generated using XCAT simind simulator
 ![NM-USNet Example execution](Images/ExampleGeneration.png)
+### A sample data of the synthetic ones are available in the folder Images, in numpy formats.
 ---
