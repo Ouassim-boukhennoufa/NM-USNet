@@ -25,3 +25,6 @@ pip install -r requirements.txt
 ![NM-USNet Example execution](Images/ExampleGeneration.png)
 ### A sample data of the synthetic ones are available in the folder Images, in numpy formats.
 ---
+## An open science project regarding NM-USNet is in progress, it will be made available when it is set.
+
+---
