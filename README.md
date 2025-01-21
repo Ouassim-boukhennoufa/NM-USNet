@@ -29,9 +29,10 @@ pip install -r requirements.txt
 
 ---
 
-## Cite this article
+### Cite this article
 ```bibtex
 @article{BOUKHENNOUFA2025107493,
+	author = {Ouassim Boukhennoufa and Laurent Comas and Jean-Marc Nicod and Noureddine Zerhouni and Hatem Boulahdour},
 	title = {NM-USNet: A novel generative model for parathyroid glands detection in nuclear medicine},
 	journal = {Biomedical Signal Processing and Control},
 	volume = {104},
@@ -39,6 +40,6 @@ pip install -r requirements.txt
 	year = {2025},
 	issn = {1746-8094},
 	doi = {https://doi.org/10.1016/j.bspc.2025.107493},
-	url = {https://www.sciencedirect.com/science/article/pii/S1746809425000047},
-	author = {Ouassim Boukhennoufa and Laurent Comas and Jean-Marc Nicod and Noureddine Zerhouni and Hatem Boulahdour},}
+	url = {https://www.sciencedirect.com/science/article/pii/S1746809425000047}
+	}
 ```
