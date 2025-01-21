@@ -28,3 +28,17 @@ pip install -r requirements.txt
 ## An open science project regarding NM-USNet is available via this link [NM-USNet](https://dx.doi.org/doi:10.25666/DATAUBFC-2024-12-17)
 
 ---
+
+## Cite this article
+```bibtex
+@article{BOUKHENNOUFA2025107493,
+	title = {NM-USNet: A novel generative model for parathyroid glands detection in nuclear medicine},
+	journal = {Biomedical Signal Processing and Control},
+	volume = {104},
+	pages = {107493},
+	year = {2025},
+	issn = {1746-8094},
+	doi = {https://doi.org/10.1016/j.bspc.2025.107493},
+	url = {https://www.sciencedirect.com/science/article/pii/S1746809425000047},
+	author = {Ouassim Boukhennoufa and Laurent Comas and Jean-Marc Nicod and Noureddine Zerhouni and Hatem Boulahdour},}
+```
